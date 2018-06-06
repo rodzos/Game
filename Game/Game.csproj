@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D26BA5B2-DF15-4B6D-82F7-BBBF2585A006}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Game</RootNamespace>
+    <AssemblyName>Game</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Logic\CardCollection.cs" />
+    <Compile Include="Logic\CardState.cs" />
+    <Compile Include="Logic\CardType.cs" />
+    <Compile Include="Logic\EffectCall.cs" />
+    <Compile Include="Logic\EffectMaker.cs" />
+    <Compile Include="Logic\EffectMakers\CardEffectMakers\BerserkEffectMaker.cs" />
+    <Compile Include="Logic\EffectMakers\CardEffectMakers\CloneEffectMaker.cs" />
+    <Compile Include="Logic\EffectMakers\CardEffectMakers\CopycatEffectMaker.cs" />
+    <Compile Include="Logic\EffectMakers\CardEffectMakers\CurseOfFearEffectMaker.cs" />
+    <Compile Include="Logic\EffectMakers\CardEffectMakers\EvolutionEffectMaker.cs" />
+    <Compile Include="Logic\EffectMakers\CardEffectMakers\MindReadingEffectMaker.cs" />
+    <Compile Include="Logic\EffectMakers\CardEffectMakers\RobberyEffectMaker.cs" />
+    <Compile Include="Logic\EffectMakers\GlobalEffects.cs" />
+    <Compile Include="Logic\EffectMakers\SequentialEffectMakerItem.cs" />
+    <Compile Include="Logic\EffectPerspective.cs" />
+    <Compile Include="Logic\EffectSequence.cs" />
+    <Compile Include="Logic\Effects\AttackEffect.cs" />
+    <Compile Include="Logic\Effects\AutoEffect.cs" />
+    <Compile Include="Logic\Effects\BlockEffect.cs" />
+    <Compile Include="Logic\Effects\DiscardEffect.cs" />
+    <Compile Include="Logic\Effects\DiscardMatchingEffect.cs" />
+    <Compile Include="Logic\Effects\DrawMatchingEffect.cs" />
+    <Compile Include="Logic\Effects\DrawEffect.cs" />
+    <Compile Include="Logic\Effects\EndEffect.cs" />
+    <Compile Include="Logic\Effects\FinishTurnEffect.cs" />
+    <Compile Include="Logic\Effects\FreezeEffect.cs" />
+    <Compile Include="Logic\Effects\HealEffect.cs" />
+    <Compile Include="Logic\Effects\HideEffect.cs" />
+    <Compile Include="Logic\Effects\LoseHealthEffect.cs" />
+    <Compile Include="Logic\Effects\LoseMaxHealthEffect.cs" />
+    <Compile Include="Logic\Effects\MoveAllEffect.cs" />
+    <Compile Include="Logic\Effects\MoveAllMatchingEffect.cs" />
+    <Compile Include="Logic\Effects\MoveEffect.cs" />
+    <Compile Include="Logic\Effects\MoveFirstEffect.cs" />
+    <Compile Include="Logic\Effects\MoveMatchingEffect.cs" />
+    <Compile Include="Logic\Effects\MoveRandomEffect.cs" />
+    <Compile Include="Logic\Effects\RevealEffect.cs" />
+    <Compile Include="Logic\Effects\RevealMatchingEffect.cs" />
+    <Compile Include="Logic\Effects\RevealRandomEffect.cs" />
+    <Compile Include="Logic\Effects\StartInDeckEffect.cs" />
+    <Compile Include="Logic\Effects\UnhideEffect.cs" />
+    <Compile Include="Logic\EnumerableExtension.cs" />
+    <Compile Include="Logic\GameState.cs" />
+    <Compile Include="Logic\Effect.cs" />
+    <Compile Include="Logic\EffectMakerPerspective.cs" />
+    <Compile Include="Logic\Effects\MoveRandomMatchingEffect.cs" />
+    <Compile Include="Logic\Phase.cs" />
+    <Compile Include="Logic\PlayerState.cs" />
+    <Compile Include="Logic\RandomExtension.cs" />
+    <Compile Include="Logic\EffectMakers\SequentialEffectMaker.cs" />
+    <Compile Include="Logic\Rarity.cs" />
+    <Compile Include="Logic\Settings.cs" />
+    <Compile Include="Logic\Tag.cs" />
+    <Compile Include="Logic\Zone.cs" />
+    <Compile Include="EntryPoint.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
