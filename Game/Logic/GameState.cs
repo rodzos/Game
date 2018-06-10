@@ -12,15 +12,15 @@ namespace Game.Logic
         private static ReadOnlyCollection<bool> buffOrder = new ReadOnlyCollection<bool>(new List<bool>{ true, false });
 
         public ReadOnlyCollection<PlayerState> Players { get; private set; }
-        public Settings Settings { get; private set; }
+        public GameRules GameRules { get; private set; }
         public Random Random { get; private set; }
         public int Turn { get; private set; }
 
-        public GameState(List<List<CardType>> decks, Settings settings = null, Random random = null)
+        public GameState(List<List<CardType>> decks, GameRules gameRules = null, Random random = null)
         {
             if (decks.Count != 2)
                 throw new ArgumentException();
-            Settings = settings ?? new Settings();
+            GameRules = gameRules ?? new GameRules();
             Random = random ?? new Random();
             Players = new ReadOnlyCollection<PlayerState>(decks.Select(deck => new PlayerState(this, deck)).ToList());
             Turn = 1;
@@ -39,7 +39,7 @@ namespace Game.Logic
             ++Turn;
         }
 
-        public IEnumerable<EffectCall> MakeTurn(Phase phase, Func<EffectMaker> globalEffects) // TODO initializer not list
+        public IEnumerable<EffectCall> MakeTurn(Phase phase, Func<EffectMaker> globalEffects)
         {
             var globalEffectMakers = new List<EffectMaker> { globalEffects(), globalEffects() };
 

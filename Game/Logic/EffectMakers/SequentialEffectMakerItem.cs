@@ -33,7 +33,7 @@ namespace Game.Logic.EffectMakers
         public static SequentialEffectMakerItem Super()
         {
             return new SequentialEffectMakerItem(Phase.End, Zone.PutOff, true,
-                x => x.Player.DeckCount >= x.Settings.SuperDeckCount,
+                x => x.Player.DeckCount >= x.GameRules.SuperDeckCount,
                 x => x.Card.Zone != Zone.PutOff,
                 x => new StartInDeckEffect());
         }

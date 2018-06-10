@@ -86,10 +86,11 @@
     <Compile Include="Logic\RandomExtension.cs" />
     <Compile Include="Logic\EffectMakers\SequentialEffectMaker.cs" />
     <Compile Include="Logic\Rarity.cs" />
-    <Compile Include="Logic\Settings.cs" />
+    <Compile Include="Logic\GameRules.cs" />
     <Compile Include="Logic\Tag.cs" />
     <Compile Include="Logic\Zone.cs" />
     <Compile Include="EntryPoint.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

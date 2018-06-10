@@ -10,6 +10,7 @@ namespace Game.Logic
     public class CardType
     {
         public String Name { get; private set; }
+        public String Description { get; private set; }
         public Rarity Rarity { get; private set; }
         public Func<EffectMaker> Effects { get; private set; }
         public ReadOnlyCollection<Tag> Tags => new ReadOnlyCollection<Tag>(tags);
@@ -24,17 +25,18 @@ namespace Game.Logic
             this.tags = tags;
         }
 
-        public CardType(String name, Rarity rarity, Func<EffectMaker> effects, params Tag[] tags)
+        public CardType(String name, String description, Rarity rarity, Func<EffectMaker> effects, params Tag[] tags)
         {
             Name = name;
+            Description = description;
             Rarity = rarity;
             Effects = effects;
             this.tags = tags.ToList();
         }
 
-        public IEnumerable<EffectCall> CallIsolated(Settings settings = null, Random random = null)
+        public IEnumerable<EffectCall> CallIsolated(GameRules gameRules = null, Random random = null)
         {
-            var game = new GameState(new List<List<CardType>> { new List<CardType> { this }, new List<CardType>() }, settings, random);
+            var game = new GameState(new List<List<CardType>> { new List<CardType> { this }, new List<CardType>() }, gameRules, random);
             game.Players[0].MoveCard(game.Players[0].PutOff[0], Zone.Hand);
             game.Players[0].MakeATurn(game.Players[0].Hand[0]);
             foreach (var e in game.MakeTurn(Phase.Play, () => null))

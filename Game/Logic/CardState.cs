@@ -17,6 +17,7 @@ namespace Game.Logic
         public bool Hidden { get; set; }
 
         public String Name => Type.Name;
+        public String Description => Type.Description;
         public Zone Zone => Owner.FindCard(this);
         public Rarity Rarity => Type.Rarity;
         public ReadOnlyCollection<Tag> Tags => Type.Tags;

@@ -36,10 +36,10 @@ namespace Game.Logic.EffectMakers
             {
                 if (perspective.Game.Turn == 1)
                 {
-                    cardsLeft = perspective.Settings.StartingHand - 1;
+                    cardsLeft = perspective.GameRules.StartingHand - 1;
                     return new DrawEffect();
                 }
-                else if (perspective.Settings.StrictHandMax || perspective.Player.Hand.Count < perspective.Settings.HandMax)
+                else if (perspective.GameRules.StrictHandMax || perspective.Player.Hand.Count < perspective.GameRules.HandMax)
                     return new DrawEffect();
             }
             return null;

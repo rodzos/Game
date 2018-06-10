@@ -10,7 +10,7 @@ namespace Game.Logic
     public class PlayerState
     {
         public GameState Game { get; private set; }
-        public Settings Settings => Game.Settings;
+        public GameRules GameRules => Game.GameRules;
         public Random Random => Game.Random;
 
         public Dictionary<Zone, List<CardState>> Cards { get; private set; }
@@ -32,8 +32,8 @@ namespace Game.Logic
         public PlayerState(GameState game, List<CardType> deck)
         {
             Game = game;
-            Health = Settings.MaxHealth;
-            MaxHealth = Settings.MaxHealth;
+            Health = GameRules.MaxHealth;
+            MaxHealth = GameRules.MaxHealth;
             Cards = new Dictionary<Zone, List<CardState>>()
             {
                 { Zone.PutOff, Random.Shuffle(deck).Select(x => new CardState(x, this)).ToList() },
@@ -114,7 +114,7 @@ namespace Game.Logic
 
         public void Draw(CardState card)
         {
-            if (Hand.Count >= Settings.HandMax && Settings.StrictHandMax)
+            if (Hand.Count >= GameRules.HandMax && GameRules.StrictHandMax)
                 Discard(card);
             else
                 MoveCardFrom(card, Zone.Deck, Zone.Hand);
@@ -124,12 +124,12 @@ namespace Game.Logic
         {
             if (!EnsureDeckNotEmpty())
             {
-                if (Settings.FailedDrawingFatigues)
+                if (GameRules.FailedDrawingFatigues)
                     ++DeckCount;
                 return null;
             }
-            if (DeckCount >= Settings.FatigueDeckCount)
-                LoseMaxHealth(Settings.FatigueValue);
+            if (DeckCount >= GameRules.FatigueDeckCount)
+                LoseMaxHealth(GameRules.FatigueValue);
             CardState card = Deck.FirstOrDefault(predicate);
             if (card != null)
                 Draw(card);
@@ -151,7 +151,7 @@ namespace Game.Logic
         {
             Health -= Math.Max(0, value - Math.Max(0, Blocked - Damage));
             Damage += value;
-            if (Settings.CapHealthBelowDuringTurn)
+            if (GameRules.CapHealthBelowDuringTurn)
                 CapHealthBelow();
         }
 
@@ -159,14 +159,14 @@ namespace Game.Logic
         {
             Health += Math.Max(0, Math.Min(Damage - Blocked, value));
             Blocked += value;
-            if (Settings.CapHealthAboveDuringTurn)
+            if (GameRules.CapHealthAboveDuringTurn)
                 CapHealthAbove();
         }
 
         public void Heal(int value)
         {
             Health += value;
-            if (Settings.CapHealthAboveDuringTurn)
+            if (GameRules.CapHealthAboveDuringTurn)
                 CapHealthAbove();
         }
 
@@ -198,42 +198,6 @@ namespace Game.Logic
             Damage = 0;
             Blocked = 0;
             Played = null;
-        }
-    }
-
-    public class ReadOnlyPlayerState
-    {
-        private PlayerState Player { get; set; }
-
-        public Settings Settings => Player.Settings;
-        public Random Random => Player.Random;
-        public ReadOnlyDictionary<Zone, ReadOnlyCollection<CardState>> Cards {
-            get
-            {
-                var dict = Player.Cards.ToDictionary(x => x.Key, x => new ReadOnlyCollection<CardState>(x.Value));
-                return new ReadOnlyDictionary<Zone, ReadOnlyCollection<CardState>>(
-                    new Dictionary<Zone, ReadOnlyCollection<CardState>>(dict));
-            }
-        }
-
-        public ReadOnlyCollection<CardState> PutOff { get { return Cards[Zone.PutOff]; } }
-        public ReadOnlyCollection<CardState> Deck { get { return Cards[Zone.Deck]; } }
-        public ReadOnlyCollection<CardState> Hand { get { return Cards[Zone.Hand]; } }
-        public ReadOnlyCollection<CardState> Play { get { return Cards[Zone.Play]; } }
-        public ReadOnlyCollection<CardState> Pile { get { return Cards[Zone.Pile]; } }
-
-        public int Health => Player.Health;
-        public int MaxHealth => Player.MaxHealth;
-        public int DeckCount => Player.DeckCount;
-        public bool Dead => Player.Dead;
-
-        public int Damage => Player.Damage;
-        public int Blocked => Player.Blocked;
-        public CardState Played => Player.Played;
-
-        public ReadOnlyPlayerState(PlayerState player)
-        {
-            Player = player;
         }
     }
 }

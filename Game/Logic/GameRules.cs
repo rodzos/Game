@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Game.Logic
 {
-    public class Settings
+    public class GameRules
     {
         public int HandMax { get; private set; } = 7;
         public int StartingHand { get; private set; } = 3;

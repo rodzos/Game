@@ -11,7 +11,7 @@ namespace Game.Logic
         public PlayerState Player { get; private set; }
         public CardState Card { get; private set; }
 
-        public Settings Settings => Player.Settings;
+        public GameRules GameRules => Player.GameRules;
         public Random Random => Player.Random;
 
         public EffectPerspective(PlayerState player, CardState card)

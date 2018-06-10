@@ -17,7 +17,7 @@ namespace Game.Logic
 
         public PlayerState Player => Game.Players[playerIndex];
         public PlayerState Opponent => Game.Players[1 - playerIndex];
-        public Settings Settings => Game.Settings;
+        public GameRules GameRules => Game.GameRules;
         public Random Random => Game.Random;
 
         public CardState Card { get; private set; }
