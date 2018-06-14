@@ -174,8 +174,8 @@ namespace Game
 
         public static void Main(string[] args)
         {
-            new AutoRun().Execute(args);
-            /*var random = new Random();
+            //new AutoRun().Execute(args);
+            var random = new Random();
             var rules = new GameRules();
             var decks = new List<Deck>();
             for (int i = 0; i < 2; ++i)
@@ -187,7 +187,7 @@ namespace Game
                 Console.WriteLine("Ты проиграл!");
             else
                 Console.WriteLine("Ты выиграл!");
-            Console.ReadLine();*/
+            Console.ReadLine();
         }
     }
 }

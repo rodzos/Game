@@ -9,10 +9,10 @@ namespace Game.Logic
 {
     public class Deck : IList<CardType>
     {
-        public static bool IsValid(IEnumerable<CardType> deck, GameRules gameRules)
+        public static bool IsValid(IEnumerable<CardType> deck, GameRules gameRules, bool ignoreMinDeckSize = false)
         {
             var deckList = deck.ToList();
-            if (deckList.Count < gameRules.MinDeckSize || deckList.Count > gameRules.MaxDeckSize)
+            if ((!ignoreMinDeckSize && deckList.Count < gameRules.MinDeckSize) || deckList.Count > gameRules.MaxDeckSize)
                 return false;
             foreach (var card in deckList)
             {
@@ -79,7 +79,7 @@ namespace Game.Logic
 
         public bool CanAddCard(CardType card)
         {
-            return IsValid(deck.Concat(new CardType[] { card }), GameRules);
+            return IsValid(deck.Concat(Enumerable.Repeat(card, 1)), GameRules, true);
         }
 
         public CardType this[int index] { get => deck[index]; set => deck[index] = value; }
