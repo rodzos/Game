@@ -9,17 +9,19 @@ namespace Game.Logic
 {
     public class GameState
     {
-        private static ReadOnlyCollection<bool> buffOrder = new ReadOnlyCollection<bool>(new List<bool>{ true, false });
+        private static readonly ReadOnlyCollection<bool> buffOrder = new ReadOnlyCollection<bool>(new List<bool>{ true, false });
 
+        public Func<EffectMaker> GlobalEffects { get; private set; }
         public ReadOnlyCollection<PlayerState> Players { get; private set; }
         public GameRules GameRules { get; private set; }
         public Random Random { get; private set; }
         public int Turn { get; private set; }
 
-        public GameState(List<List<CardType>> decks, GameRules gameRules = null, Random random = null)
+        public GameState(List<Deck> decks, Func<EffectMaker> globalEffects, GameRules gameRules = null, Random random = null)
         {
             if (decks.Count != 2)
                 throw new ArgumentException();
+            GlobalEffects = globalEffects;
             GameRules = gameRules ?? new GameRules();
             Random = random ?? new Random();
             Players = new ReadOnlyCollection<PlayerState>(decks.Select(deck => new PlayerState(this, deck)).ToList());
@@ -39,9 +41,9 @@ namespace Game.Logic
             ++Turn;
         }
 
-        public IEnumerable<EffectCall> MakeTurn(Phase phase, Func<EffectMaker> globalEffects)
+        public IEnumerable<EffectCall> MakeTurn(Phase phase)
         {
-            var globalEffectMakers = new List<EffectMaker> { globalEffects(), globalEffects() };
+            var globalEffectMakers = new List<EffectMaker> { this.GlobalEffects(), this.GlobalEffects() };
 
             var effects = new EffectSequence();
 
@@ -83,6 +85,9 @@ namespace Game.Logic
                     }
                 }
             }
+
+            if (phase == Phase.End)
+                FinishTurn();
         }
     }
 }

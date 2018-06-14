@@ -649,7 +649,8 @@ namespace Game.Logic
                 SequentialEffectMakerItem.StartInDeck(),
                 SequentialEffectMakerItem.PlayEffect(true, x => new HealEffect(5)),
                 SequentialEffectMakerItem.PlayEffect(true, x => new BlockEffect(10)),
-                SequentialEffectMakerItem.PlayEffect(true, x => new DrawMatchingEffect(y => y.Type.CallIsolated(x.GameRules, x.Random).Any(z => z.Effect is HealEffect))),
+                SequentialEffectMakerItem.PlayEffect(true, x => new DrawMatchingEffect(
+                    y => y.Type.CallIsolated(x.Game, x.Random).Any(z => z.Effect is HealEffect))),
                 SequentialEffectMakerItem.End()
             ));
 
@@ -660,7 +661,8 @@ namespace Game.Logic
                 SequentialEffectMakerItem.PlayEffect(true, x => new DrawEffect()),
                 SequentialEffectMakerItem.ConditionalPlayEffect(false, x => x.PrevEffects.EffectsFromCard(x.Card)
                     .Any(y => y.Effect is DrawEffect && ((DrawEffect)y.Effect).Drawn != null &&
-                    ((DrawEffect)y.Effect).Drawn.Type.CallIsolated(x.GameRules, x.Random).Any(z => z.Effect is AttackEffect)),
+                    ((DrawEffect)y.Effect).Drawn.Type.CallIsolated(
+                        x.Game, x.Random).Any(z => z.Effect is AttackEffect)),
                     x => new AttackEffect(15)),
                 SequentialEffectMakerItem.End()
             ));

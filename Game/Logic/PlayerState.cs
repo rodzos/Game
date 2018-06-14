@@ -29,7 +29,7 @@ namespace Game.Logic
         public int Blocked { get; private set; } = 0;
         public CardState Played { get; private set; } = null;
 
-        public PlayerState(GameState game, List<CardType> deck)
+        public PlayerState(GameState game, Deck deck)
         {
             Game = game;
             Health = GameRules.MaxHealth;

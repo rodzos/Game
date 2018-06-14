@@ -8,8 +8,6 @@ namespace Game.Logic
 {
     public enum Tag
     {
-        Attack,
-        Heal,
         Auto,
         Super,
         Trap

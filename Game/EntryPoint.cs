@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Game.Logic.CardCollection;
+using NUnitLite;
 
 namespace Game
 {
@@ -90,7 +91,7 @@ namespace Game
 
         public static void InstantlyMakeTurn(GameState game, Phase phase, bool verbose)
         {
-            foreach (var effect in game.MakeTurn(phase, () => new GlobalEffects()))
+            foreach (var effect in game.MakeTurn(phase))
             {
                 effect.Call();
                 if (verbose)
@@ -116,9 +117,9 @@ namespace Game
             return builder.ToString();
         }
 
-        public static List<bool> PlayInteractively(List<List<CardType>> decks, Random random = null)
+        public static List<bool> PlayInteractively(List<Deck> decks, Random random = null)
         {
-            var game = new GameState(decks, new GameRules(), random);
+            var game = new GameState(decks, () => new GlobalEffects(), new GameRules(), random);
             InstantlyMakeTurn(game, Phase.StartOfGame, true);
             while (game.Players.All(x => !x.Dead))
             {
@@ -167,27 +168,18 @@ namespace Game
 
                 InstantlyMakeTurn(game, Phase.Play, true);
                 InstantlyMakeTurn(game, Phase.End, true);
-                game.FinishTurn();
             }
             return game.Players.Select(x => x.Dead).ToList();
         }
 
-        public static List<CardType> RandomDeck(Random random, int size)
+        public static void Main(string[] args)
         {
-            var deck = new List<CardType>();
-            while (deck.Count < size)
-                deck.Add(random.Choice(AllCards.
-                    Where(x => deck.Count(y => y == x) < (x.Rarity == Rarity.Common ? 2 : 1) &&
-                          (!x.Tags.Contains(Tag.Auto) || deck.Count(y => y.Tags.Contains(Tag.Auto)) < 2) &&
-                          (!x.Tags.Contains(Tag.Super) || deck.Count(y => y.Tags.Contains(Tag.Super)) < 1))
-                ));
-            return deck;
-        }
-
-        public static void Main()
-        {
-            var random = new Random();
-            var decks = new List<List<CardType>> { RandomDeck(random, 15), RandomDeck(random, 15) };
+            new AutoRun().Execute(args);
+            /*var random = new Random();
+            var rules = new GameRules();
+            var decks = new List<Deck>();
+            for (int i = 0; i < 2; ++i)
+                decks.Add(Deck.MakeRandomDeck(AllCards, rules, random));
             var dead = PlayInteractively(decks, random);
             if (dead[0] && dead[1])
                 Console.WriteLine("Ничья!");
@@ -195,7 +187,7 @@ namespace Game
                 Console.WriteLine("Ты проиграл!");
             else
                 Console.WriteLine("Ты выиграл!");
-            Console.ReadLine();
+            Console.ReadLine();*/
         }
     }
 }

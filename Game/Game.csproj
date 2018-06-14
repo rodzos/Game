@@ -35,9 +35,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LogicTests\CardCollectionTests.cs" />
+    <Compile Include="LogicTests\LogicTests.cs" />
     <Compile Include="Logic\CardCollection.cs" />
     <Compile Include="Logic\CardState.cs" />
     <Compile Include="Logic\CardType.cs" />
+    <Compile Include="Logic\Deck.cs" />
     <Compile Include="Logic\EffectCall.cs" />
     <Compile Include="Logic\EffectMaker.cs" />
     <Compile Include="Logic\EffectMakers\CardEffectMakers\BerserkEffectMaker.cs" />
@@ -91,6 +94,13 @@
     <Compile Include="Logic\Zone.cs" />
     <Compile Include="EntryPoint.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>.\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunitlite">
+      <HintPath>.\nunitlite.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
