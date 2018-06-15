@@ -35,8 +35,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LogicTests\CardCollectionTests.cs" />
-    <Compile Include="LogicTests\LogicTests.cs" />
     <Compile Include="Logic\CardCollection.cs" />
     <Compile Include="Logic\CardState.cs" />
     <Compile Include="Logic\CardType.cs" />
@@ -80,10 +78,15 @@
     <Compile Include="Logic\Effects\StartInDeckEffect.cs" />
     <Compile Include="Logic\Effects\UnhideEffect.cs" />
     <Compile Include="Logic\EnumerableExtension.cs" />
+    <Compile Include="Logic\Interactor\Game.cs" />
     <Compile Include="Logic\GameState.cs" />
     <Compile Include="Logic\Effect.cs" />
     <Compile Include="Logic\EffectMakerPerspective.cs" />
     <Compile Include="Logic\Effects\MoveRandomMatchingEffect.cs" />
+    <Compile Include="Logic\Interactor\IInteractor.cs" />
+    <Compile Include="Logic\Interactor\Interactors\AIInteractor.cs" />
+    <Compile Include="Logic\Interactor\Interactors\ConsoleInteractor.cs" />
+    <Compile Include="Logic\Interactor\Interactors\EffectDisplayer.cs" />
     <Compile Include="Logic\Phase.cs" />
     <Compile Include="Logic\PlayerState.cs" />
     <Compile Include="Logic\RandomExtension.cs" />
@@ -92,15 +95,7 @@
     <Compile Include="Logic\GameRules.cs" />
     <Compile Include="Logic\Tag.cs" />
     <Compile Include="Logic\Zone.cs" />
-    <Compile Include="EntryPoint.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>.\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="nunitlite">
-      <HintPath>.\nunitlite.dll</HintPath>
-    </Reference>
+    <Compile Include="Program.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,18 +1,18 @@
-﻿using Game.Logic;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using Game.Logic;
 
-namespace Game.LogicTests
+namespace GameTests.LogicTests
 {
     [TestFixture]
     class LogicTests
     {
         private readonly GameRules rules = new GameRules();
-        private readonly Func<EffectMaker> makeGlobalEffects = () => new Logic.EffectMakers.GlobalEffects();
+        private readonly Func<EffectMaker> makeGlobalEffects = () => new Game.Logic.EffectMakers.GlobalEffects();
 
         public static void InstantlyMakeTurn(GameState game, Phase phase)
         {
@@ -21,10 +21,10 @@ namespace Game.LogicTests
         }
 
         private readonly CardType attack5 = new CardType("Атака 5", "Атака 5", Rarity.Common,
-            () => new Logic.EffectMakers.SequentialEffectMaker(
-                Logic.EffectMakers.SequentialEffectMakerItem.StartInDeck(),
-                Logic.EffectMakers.SequentialEffectMakerItem.PlayEffect(false, x => new Logic.Effects.AttackEffect(5)),
-                Logic.EffectMakers.SequentialEffectMakerItem.End()
+            () => new Game.Logic.EffectMakers.SequentialEffectMaker(
+                Game.Logic.EffectMakers.SequentialEffectMakerItem.StartInDeck(),
+                Game.Logic.EffectMakers.SequentialEffectMakerItem.PlayEffect(false, x => new Game.Logic.Effects.AttackEffect(5)),
+                Game.Logic.EffectMakers.SequentialEffectMakerItem.End()
             ));
 
         [Test]

@@ -17,10 +17,12 @@ namespace Game.Logic
         public Random Random { get; private set; }
         public int Turn { get; private set; }
 
+        public bool IsEnded => Players.Any(x => x.Dead);
+
         public GameState(List<Deck> decks, Func<EffectMaker> globalEffects, GameRules gameRules = null, Random random = null)
         {
             if (decks.Count != 2)
-                throw new ArgumentException();
+                throw new ArgumentException("Should have exactly 2 decks");
             GlobalEffects = globalEffects;
             GameRules = gameRules ?? new GameRules();
             Random = random ?? new Random();

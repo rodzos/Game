@@ -1,18 +1,18 @@
-﻿using Game.Logic;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Game.Logic;
+using NUnit.Framework;
 
-namespace Game.LogicTests
+namespace GameTests.LogicTests
 {
     [TestFixture]
     class CardCollectionTests
     {
         private readonly GameRules rules = new GameRules();
-        private readonly Func<EffectMaker> makeGlobalEffects = () => new Logic.EffectMakers.GlobalEffects();
+        private readonly Func<EffectMaker> makeGlobalEffects = () => new Game.Logic.EffectMakers.GlobalEffects();
 
         public static void InstantlyMakeTurn(GameState game, Phase phase)
         {
