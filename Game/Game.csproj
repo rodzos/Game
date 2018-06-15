@@ -33,9 +33,11 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logic\CardCollection.cs" />
+    <Compile Include="Logic\CardCollection\CardCollection.cs" />
+    <Compile Include="Logic\CardCollection\ICardCollection.cs" />
     <Compile Include="Logic\CardState.cs" />
     <Compile Include="Logic\CardType.cs" />
     <Compile Include="Logic\Deck.cs" />
@@ -96,6 +98,11 @@
     <Compile Include="Logic\Tag.cs" />
     <Compile Include="Logic\Zone.cs" />
     <Compile Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Ninject, Version=3.3.4.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.3.4\lib\net45\Ninject.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

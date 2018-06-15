@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Game.Logic;
+using Game.Logic.CardCollection;
 using NUnit.Framework;
 
 namespace GameTests.LogicTests
@@ -142,6 +143,47 @@ namespace GameTests.LogicTests
         }
 
         [Test]
+        public void TestInSight()
+        {
+            var game = PlayOneCard(CardCollection.InSight, CardCollection.Block);
+            Assert.AreEqual(100, game.Players[1].Health);
+            Assert.AreEqual(1, game.Players[0].Play.Count);
+            Assert.AreEqual(0, game.Players[0].Pile.Count);
+
+            InstantlyMakeTurn(game, Phase.Choose);
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(85, game.Players[1].Health);
+            Assert.AreEqual(0, game.Players[0].Play.Count);
+            Assert.AreEqual(1, game.Players[0].Pile.Count);
+        }
+
+        [Test]
+        public void TestBerserk()
+        {
+            var game = InitializeState(CardCollection.Berserk, CardCollection.Attack, CardCollection.Attack);
+            InstantlyMakeTurn(game, Phase.StartOfGame);
+            InstantlyMakeTurn(game, Phase.Choose);
+            game.Players[0].Attack(10);
+            game.Players[0].MakeATurn(game.Players[0].Hand.Find(x => x.Type == CardCollection.Berserk));
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(95, game.Players[0].Health);
+            Assert.AreEqual(95, game.Players[1].Health);
+
+            game = InitializeState(CardCollection.Berserk, CardCollection.Attack, CardCollection.Attack);
+            InstantlyMakeTurn(game, Phase.StartOfGame);
+            InstantlyMakeTurn(game, Phase.Choose);
+            game.Players[0].Attack(25);
+            game.Players[0].MakeATurn(game.Players[0].Hand.Find(x => x.Type == CardCollection.Berserk));
+            game.Players[0].Play.Add(new CardState(CardCollection.Attack, game.Players[0]));
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(95, game.Players[0].Health);
+            Assert.AreEqual(80, game.Players[1].Health);
+        }
+
+        [Test]
         public void TestMindReading()
         {
             var game = InitializeState(CardCollection.MindReading, CardCollection.Attack, CardCollection.Attack);
@@ -151,21 +193,6 @@ namespace GameTests.LogicTests
             InstantlyMakeTurn(game, Phase.End);
             Assert.AreEqual(95, game.Players[0].Health);
             Assert.AreEqual(80, game.Players[1].Health);
-        }
-
-        [Test]
-        public void TestInSight()
-        {
-            var game = PlayOneCard(CardCollection.InSight, CardCollection.Block);
-            Assert.AreEqual(100, game.Players[1].Health);
-            Assert.AreEqual(1, game.Players[0].Play.Count);
-            Assert.AreEqual(0, game.Players[0].Pile.Count);
-            InstantlyMakeTurn(game, Phase.Choose);
-            InstantlyMakeTurn(game, Phase.Play);
-            InstantlyMakeTurn(game, Phase.End);
-            Assert.AreEqual(85, game.Players[1].Health);
-            Assert.AreEqual(0, game.Players[0].Play.Count);
-            Assert.AreEqual(1, game.Players[0].Pile.Count);
         }
 
         [Test, Timeout(5000)]
@@ -278,6 +305,237 @@ namespace GameTests.LogicTests
             InstantlyMakeTurn(game, Phase.Play);
             InstantlyMakeTurn(game, Phase.End);
             Assert.AreEqual(0, game.Players[0].PutOff.Count);
+        }
+
+        [Test]
+        public void TestEnchantedCards()
+        {
+            var game = PlayOneCard(CardCollection.EnchantedCards, CardCollection.Attack);
+            Assert.AreEqual(70, game.Players[1].Health);
+            Assert.AreEqual(0, game.Players[0].Hand.Count);
+        }
+
+        [Test]
+        public void TestTakeAim()
+        {
+            var game = PlayOneCard(CardCollection.TakeAim, CardCollection.Attack);
+            Assert.AreEqual(100, game.Players[1].Health);
+            Assert.AreEqual(1, game.Players[0].Play.Count);
+
+            InstantlyMakeTurn(game, Phase.Choose);
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(100, game.Players[1].Health);
+            Assert.AreEqual(1, game.Players[0].Play.Count);
+
+            InstantlyMakeTurn(game, Phase.Choose);
+            game.Players[0].MakeATurn(game.Players[0].Hand.First());
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(70, game.Players[1].Health);
+            Assert.AreEqual(0, game.Players[0].Play.Count);
+        }
+
+        [Test]
+        public void TestRegeneration()
+        {
+            var game = PlayOneCard(CardCollection.Regeneration, CardCollection.Attack);
+            Assert.AreEqual(100, game.Players[0].Health);
+            Assert.AreEqual(1, game.Players[0].Play.Count);
+
+            InstantlyMakeTurn(game, Phase.Choose);
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(100, game.Players[0].Health);
+            Assert.AreEqual(1, game.Players[0].Play.Count);
+            
+            InstantlyMakeTurn(game, Phase.Choose);
+            game.Players[0].Attack(75);
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(50, game.Players[0].Health);
+            Assert.AreEqual(0, game.Players[0].Play.Count);
+        }
+
+        [Test]
+        public void TestWeaponCrate()
+        {
+            var game = PlayOneCard(CardCollection.WeaponCrate, CardCollection.Attack);
+            Assert.AreEqual(100, game.Players[1].Health);
+            Assert.AreEqual(1, game.Players[0].Pile.Count);
+            Assert.AreEqual(12, game.Players[0].Deck.Count);
+
+            game = PlayOneCard(CardCollection.WeaponCrate, CardCollection.MightyStrike);
+            Assert.AreEqual(95, game.Players[1].Health);
+            Assert.AreEqual(2, game.Players[0].Pile.Count);
+            Assert.AreEqual(11, game.Players[0].Deck.Count);
+        }
+
+        [Test]
+        public void TestCombustion()
+        {
+            var game = PlayOneCard(CardCollection.Combustion, CardCollection.Attack);
+            Assert.AreEqual(100, game.Players[1].Health);
+            Assert.AreEqual(1, game.Players[0].Play.Count);
+            Assert.AreEqual(3, game.Players[1].Hand.Count);
+            Assert.AreEqual(0, game.Players[1].Pile.Count);
+            
+            InstantlyMakeTurn(game, Phase.Choose);
+            game.Players[1].Play.Add(new CardState(CardCollection.Blessing, game.Players[1]));
+            game.Players[1].Deck.Insert(0, new CardState(CardCollection.Block, game.Players[1]));
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(85, game.Players[1].Health);
+            Assert.AreEqual(0, game.Players[0].Play.Count);
+            Assert.AreEqual(4, game.Players[1].Hand.Count);
+            Assert.AreEqual(2, game.Players[1].Pile.Count);
+            AssertIsOfType(CardCollection.Block, game.Players[1].Pile[0]);
+            AssertIsOfType(CardCollection.Blessing, game.Players[1].Pile[1]);
+        }
+        
+        [Test]
+        public void TestCopycat()
+        {
+            var game = InitializeState(CardCollection.Attack, CardCollection.Attack, CardCollection.Attack);
+            game.Players[0].Draw();
+            game.Players[0].Draw();
+            game.Players[0].Play.Add(new CardState(CardCollection.Copycat, game.Players[0]));
+            game.Players[0].Play.Add(new CardState(CardCollection.EnchantedCards, game.Players[0]));
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+
+            Assert.AreEqual(10, game.Players[1].Health);
+            Assert.AreEqual(1, game.Players[0].Hand.Count);
+            Assert.AreEqual(6, game.Players[0].Pile.Count);
+        }
+
+        [Test]
+        public void TestRobbery()
+        {
+            var game = PlayOneCard(CardCollection.Robbery, CardCollection.Attack);
+            Assert.AreEqual(80, game.Players[1].Health);
+            Assert.AreEqual(3, game.Players[1].Hand.Count);
+            Assert.AreEqual(11, game.Players[1].Deck.Count);
+            Assert.AreEqual(1, game.Players[1].Pile.Count);
+        }
+
+        [Test]
+        public void TestHealingRain()
+        {
+            var game = InitializeState(CardCollection.HealingRain, CardCollection.HealingRain, CardCollection.HealingRain);
+            game.Players[0].Attack(155);
+            game.Players[0].MakeATurn(game.Players[0].Hand.First());
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+
+            Assert.AreEqual(95, game.Players[0].Health);
+            Assert.AreEqual(15, game.Players[0].Pile.Count);
+        }
+
+        [Test]
+        public void TestBomb()
+        {
+            var game = PlayOneCard(CardCollection.Bomb, CardCollection.Attack);
+            Assert.AreEqual(85, game.Players[1].Health);
+            Assert.AreEqual(0, game.Players[0].Pile.Count);
+            Assert.AreEqual(1, game.Players[0].PutOff.Count);
+            AssertIsOfType(CardCollection.Bomb, game.Players[0].PutOff[0]);
+        }
+
+        [Test]
+        public void TestEvolution()
+        {
+            var game = PlayOneCard(CardCollection.Evolution, CardCollection.Evolution);
+            Assert.AreEqual(90, game.Players[1].Health);
+
+            InstantlyMakeTurn(game, Phase.Choose);
+            game.Players[0].MakeATurn(game.Players[0].Hand[0]);
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(80, game.Players[1].Health);
+
+            InstantlyMakeTurn(game, Phase.Choose);
+            game.Players[0].MoveCard(game.Players[0].Pile[0], Zone.Play);
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(65, game.Players[1].Health);
+        }
+
+        [Test]
+        public void TestFireTank()
+        {
+            var game = PlayOneCard(CardCollection.FireTank, CardCollection.FireTank);
+            Assert.AreEqual(90, game.Players[1].Health);
+            Assert.AreEqual(0, game.Players[0].Pile.Count);
+            Assert.AreEqual(1, game.Players[0].Play.Count);
+
+            InstantlyMakeTurn(game, Phase.Choose);
+            game.Players[0].MakeATurn(game.Players[0].Hand[0]);
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(80, game.Players[1].Health);
+            Assert.AreEqual(0, game.Players[0].Pile.Count);
+            Assert.AreEqual(2, game.Players[0].Play.Count);
+
+            InstantlyMakeTurn(game, Phase.Choose);
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(50, game.Players[1].Health);
+            Assert.AreEqual(2, game.Players[0].Pile.Count);
+            Assert.AreEqual(0, game.Players[0].Play.Count);
+        }
+
+        [Test]
+        public void TestSpikeTrap()
+        {
+            var game = PlayTwoCards(CardCollection.SpikeTrap, CardCollection.Attack, CardCollection.Attack);
+            Assert.AreEqual(100, game.Players[1].Health);
+            Assert.AreEqual(0, game.Players[0].Pile.Count);
+            Assert.AreEqual(1, game.Players[0].Play.Count);
+
+            InstantlyMakeTurn(game, Phase.Choose);
+            game.Players[1].MakeATurn(game.Players[1].Hand[0]);
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            Assert.AreEqual(85, game.Players[1].Health);
+            Assert.AreEqual(1, game.Players[0].Pile.Count);
+            Assert.AreEqual(0, game.Players[0].Play.Count);
+        }
+
+        [Test]
+        public void TestCircularSaw()
+        {
+            var game = PlayOneCard(CardCollection.CursedFlame, CardCollection.CircularSaw);
+            Assert.AreEqual(65, game.Players[1].Health);
+            Assert.AreEqual(1, game.Players[0].Hand.Count);
+            Assert.AreEqual(2, game.Players[0].Pile.Count);
+            Assert.AreEqual(0, game.Players[0].Play.Count);
+            AssertIsOfType(CardCollection.CursedFlame, game.Players[0].Pile[0]);
+            AssertIsOfType(CardCollection.CircularSaw, game.Players[0].Pile[1]);
+        }
+
+        [Test]
+        public void TestFirstAid()
+        {
+            var game = PlayTwoCards(CardCollection.FirstAid, CardCollection.Attack, CardCollection.Heal);
+            Assert.AreEqual(95, game.Players[0].Health);
+            Assert.AreEqual(3, game.Players[0].Hand.Count);
+
+            game = PlayTwoCards(CardCollection.FirstAid, CardCollection.Attack, CardCollection.Attack);
+            Assert.AreEqual(95, game.Players[0].Health);
+            Assert.AreEqual(2, game.Players[0].Hand.Count);
+        }
+
+        [Test]
+        public void TestCombo()
+        {
+            var game = PlayOneCard(CardCollection.Combo, CardCollection.Attack);
+            Assert.AreEqual(85, game.Players[1].Health);
+            Assert.AreEqual(3, game.Players[0].Hand.Count);
+
+            game = PlayOneCard(CardCollection.Combo, CardCollection.Heal);
+            Assert.AreEqual(100, game.Players[1].Health);
+            Assert.AreEqual(3, game.Players[0].Hand.Count);
         }
     }
 }

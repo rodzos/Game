@@ -11,21 +11,28 @@ namespace GameTests.LogicTests
     [TestFixture]
     class LogicTests
     {
-        private readonly GameRules rules = new GameRules();
-        private readonly Func<EffectMaker> makeGlobalEffects = () => new Game.Logic.EffectMakers.GlobalEffects();
+        private static GameRules rules = new GameRules();
+        private static Func<EffectMaker> makeGlobalEffects = () => new Game.Logic.EffectMakers.GlobalEffects();
+        
+        private static CardType attack5 = new CardType("Атака 5", "Атака 5", Rarity.Common,
+            () => new Game.Logic.EffectMakers.SequentialEffectMaker(
+                Game.Logic.EffectMakers.SequentialEffectMakerItem.StartInDeck(),
+                Game.Logic.EffectMakers.SequentialEffectMakerItem.PlayEffect(false, x => new Game.Logic.Effects.AttackEffect(5)),
+                Game.Logic.EffectMakers.SequentialEffectMakerItem.End()
+            ));
+
+        private static Deck fillerDeck = new Deck(Enumerable.Repeat(attack5, 15).ToList(), rules);
+
+        private static GameState MakeFillerGame()
+        {
+            return new GameState(new List<Deck> { fillerDeck, fillerDeck }, makeGlobalEffects, rules);
+        }
 
         public static void InstantlyMakeTurn(GameState game, Phase phase)
         {
             foreach (var effect in game.MakeTurn(phase))
                 effect.Call();
         }
-
-        private readonly CardType attack5 = new CardType("Атака 5", "Атака 5", Rarity.Common,
-            () => new Game.Logic.EffectMakers.SequentialEffectMaker(
-                Game.Logic.EffectMakers.SequentialEffectMakerItem.StartInDeck(),
-                Game.Logic.EffectMakers.SequentialEffectMakerItem.PlayEffect(false, x => new Game.Logic.Effects.AttackEffect(5)),
-                Game.Logic.EffectMakers.SequentialEffectMakerItem.End()
-            ));
 
         [Test]
         public void TestEmptyDecks()
@@ -85,8 +92,7 @@ namespace GameTests.LogicTests
         [Test]
         public void TestStartOfGame()
         {
-            var deck = new Deck(Enumerable.Repeat(attack5, 15), rules);
-            var game = new GameState(new List<Deck> { deck, deck }, makeGlobalEffects, rules);
+            var game = MakeFillerGame();
             InstantlyMakeTurn(game, Phase.StartOfGame);
             Assert.AreEqual(2, game.Players.Count);
             for (int i = 0; i < game.Players.Count; ++i)
@@ -102,8 +108,7 @@ namespace GameTests.LogicTests
         [Test]
         public void TestDrawFirstCards()
         {
-            var deck = new Deck(Enumerable.Repeat(attack5, 15), rules);
-            var game = new GameState(new List<Deck> { deck, deck }, makeGlobalEffects, rules);
+            var game = MakeFillerGame();
             InstantlyMakeTurn(game, Phase.StartOfGame);
             InstantlyMakeTurn(game, Phase.Choose);
             for (int i = 0; i < game.Players.Count; ++i)
@@ -119,8 +124,7 @@ namespace GameTests.LogicTests
         [Test]
         public void TestMakeATurn()
         {
-            var deck = new Deck(Enumerable.Repeat(attack5, 15), rules);
-            var game = new GameState(new List<Deck> { deck, deck }, makeGlobalEffects, rules);
+            var game = MakeFillerGame();
             InstantlyMakeTurn(game, Phase.StartOfGame);
             InstantlyMakeTurn(game, Phase.Choose);
             game.Players[0].MakeATurn(game.Players[0].Hand[0]);
@@ -134,7 +138,47 @@ namespace GameTests.LogicTests
                 Assert.AreEqual(0, game.Players[i].PutOff.Count);
                 Assert.AreEqual(0, game.Players[i].Play.Count);
                 Assert.AreEqual(i == 0 ? 1 : 0, game.Players[i].Pile.Count);
+                Assert.AreEqual(rules.MaxHealth - (i == 0 ? 0 : 5), game.Players[i].Health);
             }
+        }
+
+        [Test]
+        public void TestDiscardOnOverdraw()
+        {
+            var game = MakeFillerGame();
+            InstantlyMakeTurn(game, Phase.StartOfGame);
+            InstantlyMakeTurn(game, Phase.Choose);
+            InstantlyMakeTurn(game, Phase.Play);
+            InstantlyMakeTurn(game, Phase.End);
+            while (game.Players[0].Hand.Count < rules.HandMax)
+                game.Players[0].Hand.Add(new CardState(attack5, game.Players[0]));
+            Assert.AreEqual(0, game.Players[0].Pile.Count);
+            InstantlyMakeTurn(game, Phase.Choose);
+            Assert.AreEqual(1, game.Players[0].Pile.Count);
+        }
+
+        [Test]
+        public void TestFatigue()
+        {
+            var game = MakeFillerGame();
+            InstantlyMakeTurn(game, Phase.StartOfGame);
+
+            for (int i = 0; i < rules.FatigueDeckCount - 1; ++i)
+            {
+                InstantlyMakeTurn(game, Phase.Choose);
+                InstantlyMakeTurn(game, Phase.Play);
+                InstantlyMakeTurn(game, Phase.End);
+                game.Players[0].Pile.AddRange(game.Players[0].Deck);
+                game.Players[0].Deck.Clear();
+            }
+
+            Assert.AreEqual(rules.MaxHealth, game.Players[0].Health);
+            Assert.AreEqual(rules.MaxHealth, game.Players[0].MaxHealth);
+            
+            InstantlyMakeTurn(game, Phase.Choose);
+
+            Assert.AreEqual(rules.MaxHealth - rules.FatigueValue, game.Players[0].Health);
+            Assert.AreEqual(rules.MaxHealth - rules.FatigueValue, game.Players[0].MaxHealth);
         }
     }
 }

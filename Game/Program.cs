@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 using Game.Logic;
 using Game.Logic.EffectMakers;
-using Game.Logic.Effects;
 using Game.Logic.Interactor;
-using static Game.Logic.CardCollection;
+using Ninject;
+using Game.Logic.CardCollection;
+using System.IO;
 
 namespace Game
 {
@@ -17,18 +18,27 @@ namespace Game
     {
         public static void Main(string[] args)
         {
-            var rules = new GameRules();
-            var random = new Random();
-            var decks = new List<Deck>();
-            for (int i = 0; i < 2; ++i)
-                decks.Add(Deck.MakeRandomDeck(AllCards, rules, random));
+            var container = new StandardKernel();
 
-            var interactors = new List<IInteractor>();
-            interactors.Add(new Logic.Interactor.Interactors.ConsoleInteractor());
-            interactors.Add(new Logic.Interactor.Interactors.AIInteractor());
+            container.Bind<TextReader>().ToConstant(Console.In);
+            container.Bind<TextWriter>().ToConstant(Console.Out);
 
-            var game = new Logic.Interactor.Game(decks, interactors);
-            game.Play();
+            container.Bind<Func<EffectMaker>>().ToConstant<Func<EffectMaker>>(() => new GlobalEffects());
+            container.Bind<GameRules>().ToSelf();
+            container.Bind<Random>().ToSelf();
+            container.Bind<ICardCollection>().To<CardCollection>();
+
+            container.Bind<Deck>().ToMethod(x => Deck.MakeRandomDeck(
+                x.Kernel.Get<CardCollection>(), x.Kernel.Get<GameRules>(), x.Kernel.Get<Random>()));
+            container.Bind<Deck>().ToMethod(x => x.Kernel.GetAll<Deck>().First());
+
+            container.Bind<IInteractor>().To<Logic.Interactor.Interactors.ConsoleInteractor>();
+            container.Bind<IInteractor>().To<Logic.Interactor.Interactors.AIInteractor>();
+
+            container.Bind<Logic.Interactor.Game>().ToSelf()
+                .OnActivation(x => x.Play());
+
+            var game = container.Get<Logic.Interactor.Game>();
         }
     }
 }

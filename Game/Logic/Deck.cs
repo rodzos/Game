@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Game.Logic.CardCollection;
 
 namespace Game.Logic
 {
@@ -28,14 +29,15 @@ namespace Game.Logic
             return true;
         }
 
-        public static Deck MakeRandomDeck(IEnumerable<CardType> cardCollection, GameRules gameRules, int deckSize, Random random)
+        public static Deck MakeRandomDeck(ICardCollection cardCollection, GameRules gameRules, int deckSize, Random random)
         {
+            var cards = cardCollection.GetCards().ToList();
             if (deckSize < gameRules.MinDeckSize || deckSize > gameRules.MaxDeckSize)
                 throw new ArgumentException("Deck size is incorrect");
             var deck = new Deck(gameRules);
             while (deck.Count < deckSize)
             {
-                var card = random.ChoiceOrDefault(cardCollection.Where(x => deck.CanAddCard(x)));
+                var card = random.ChoiceOrDefault(cards.Where(x => deck.CanAddCard(x)));
                 if (card == null)
                     throw new ArgumentException("Collection is not large enough");
                 deck.Add(card);
@@ -43,7 +45,7 @@ namespace Game.Logic
             return deck;
         }
 
-        public static Deck MakeRandomDeck(IEnumerable<CardType> cardCollection, GameRules gameRules, Random random)
+        public static Deck MakeRandomDeck(ICardCollection cardCollection, GameRules gameRules, Random random)
         {
             return MakeRandomDeck(cardCollection, gameRules, gameRules.MinDeckSize, random);
         }

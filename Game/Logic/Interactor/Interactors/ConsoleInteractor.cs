@@ -34,15 +34,19 @@ namespace Game.Logic.Interactor.Interactors
             return $"{card.Name} ({card.Description})";
         }
 
+        private readonly TextReader input;
+        private readonly TextWriter output;
+
         private Game game;
         private PlayerState player;
         private PlayerState opponent;
 
         private bool dispayedPlayedCard = false;
 
-        public ConsoleInteractor()
+        public ConsoleInteractor(TextReader input, TextWriter output)
         {
-
+            this.input = input;
+            this.output = output;
         }
 
         public void StartGame(Game game, PlayerState player)
@@ -55,12 +59,12 @@ namespace Game.Logic.Interactor.Interactors
         public void EndGame()
         {
             if (player.Dead && opponent.Dead)
-                Console.WriteLine("Ничья!");
+                output.WriteLine("Ничья!");
             else if (player.Dead)
-                Console.WriteLine("Вы проиграли!");
+                output.WriteLine("Вы проиграли!");
             else
-                Console.WriteLine("Вы выиграли!");
-            Console.ReadLine();
+                output.WriteLine("Вы выиграли!");
+            input.ReadLine();
             game = null;
             player = null;
             opponent = null;
@@ -69,31 +73,31 @@ namespace Game.Logic.Interactor.Interactors
         public void AskForChoice()
         {
             dispayedPlayedCard = false;
-            Console.WriteLine();
-            Console.WriteLine($"Ваше здоровье: {player.Health}/{player.MaxHealth}");
-            Console.WriteLine($"Ваша зона игры: {Join(player.Play.Select(CardToString), ", ")}");
-            Console.WriteLine($"Ваша рука: {Join(player.Hand.Select(CardToString), ", ")}");
-            Console.WriteLine($"Ваша колода: {player.Deck.Count} карт, Ваш сброс: {player.Pile.Count} карт");
-            Console.WriteLine();
-            Console.WriteLine($"Здоровье противника: {opponent.Health}/{opponent.MaxHealth}");
-            Console.WriteLine($"Зона игры противника: {Join(opponent.Play.Select(x => x.Hidden ? "???" : CardToString(x)), ", ")}");
-            Console.WriteLine($"Рука противника: {opponent.Hand.Count} карт");
-            Console.WriteLine($"Колода противника: {opponent.Deck.Count} карт, сброс противника: {opponent.Pile.Count} карт");
-            Console.WriteLine();
-            Console.WriteLine("Сделайте ход:");
-            Console.WriteLine("(0) Пропуск хода");
+            output.WriteLine();
+            output.WriteLine($"Ваше здоровье: {player.Health}/{player.MaxHealth}");
+            output.WriteLine($"Ваша зона игры: {Join(player.Play.Select(CardToString), ", ")}");
+            output.WriteLine($"Ваша рука: {Join(player.Hand.Select(CardToString), ", ")}");
+            output.WriteLine($"Ваша колода: {player.Deck.Count} карт, Ваш сброс: {player.Pile.Count} карт");
+            output.WriteLine();
+            output.WriteLine($"Здоровье противника: {opponent.Health}/{opponent.MaxHealth}");
+            output.WriteLine($"Зона игры противника: {Join(opponent.Play.Select(x => x.Hidden ? "???" : CardToString(x)), ", ")}");
+            output.WriteLine($"Рука противника: {opponent.Hand.Count} карт");
+            output.WriteLine($"Колода противника: {opponent.Deck.Count} карт, сброс противника: {opponent.Pile.Count} карт");
+            output.WriteLine();
+            output.WriteLine("Сделайте ход:");
+            output.WriteLine("(0) Пропуск хода");
             for (int i = 0; i < player.Hand.Count; ++i)
-                Console.WriteLine($"({i + 1}) {CardToStringDetailed(player.Hand[i])}");
+                output.WriteLine($"({i + 1}) {CardToStringDetailed(player.Hand[i])}");
 
             int result;
             while (true)
             {
-                string s = Console.ReadLine();
+                string s = input.ReadLine();
                 if (int.TryParse(s, out result) && 0 <= result && result <= player.Hand.Count)
                     break;
             }
-            Console.WriteLine();
-            Console.WriteLine();
+            output.WriteLine();
+            output.WriteLine();
             MakeChoice(this, result == 0 ? null : player.Hand[result - 1]);
         }
 
@@ -101,13 +105,16 @@ namespace Game.Logic.Interactor.Interactors
 
         private string EffectCallToString(EffectCall effectCall)
         {
+            string source, target;
             if (effectCall.Caller == null)
-                return "Глобальный эффект";
+                source = "Глобальный эффект";
             else if (effectCall.CallerCard == null)
-                return effectCall.Caller == player ? "Ваш глобальный эффект" : "Глобальный эффект противника";
+                source = effectCall.Caller == player ? "Ваш глобальный эффект" : "Глобальный эффект противника";
             else
-                return effectCall.Caller == player ? $"Эффект Вашей карты {CardToString(effectCall.CallerCard)}" :
+                source = effectCall.Caller == player ? $"Эффект Вашей карты {CardToString(effectCall.CallerCard)}" :
                     $"Эффект карты противника {CardToString(effectCall.CallerCard)}";
+            target = effectCall.Target == player ? "Вас" : "противника";
+            return String.Format("{0} действует на {1}", source, target);
         }
 
         private string EffectToString(Effect effect)
@@ -126,14 +133,14 @@ namespace Game.Logic.Interactor.Interactors
             if (dispayedPlayedCard == false && opponent.Played != null)
             {
                 if (opponent.Played.Hidden)
-                    Console.WriteLine("Противник разыгрывает ???!");
+                    output.WriteLine("Противник разыгрывает ???!");
                 else
-                    Console.WriteLine($"Противник разыгрывает {CardToStringDetailed(opponent.Played)}!");
+                    output.WriteLine($"Противник разыгрывает {CardToStringDetailed(opponent.Played)}!");
                 dispayedPlayedCard = true;
             }
             var effectString = EffectToString(effect.Effect);
             if (effectString != null)
-                Console.WriteLine("{0}: {1}", EffectCallToString(effect), effectString);
+                output.WriteLine("{0}: {1}", EffectCallToString(effect), effectString);
         }
     }
 }

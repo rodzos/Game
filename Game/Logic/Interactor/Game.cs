@@ -24,7 +24,7 @@ namespace Game.Logic.Interactor
                 throw new ArgumentException("Should have exactly 2 decks");
             if (interactors.Count != 2)
                 throw new ArgumentException("Should have exactly 2 interactors");
-            GameState = new GameState(decks, globalEffects ?? (() => new EffectMakers.GlobalEffects()),
+            GameState = new GameState(decks.ToList(), globalEffects ?? (() => new EffectMakers.GlobalEffects()),
                 rules ?? new GameRules(), random ?? new Random());
             this.interactors = interactors.ToList();
             for (int i = 0; i < 2; ++i)

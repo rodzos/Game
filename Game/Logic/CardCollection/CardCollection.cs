@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Game.Logic
+namespace Game.Logic.CardCollection
 {
-    public static class CardCollection
+    public class CardCollection : ICardCollection
     {
         public static CardType Attack = new CardType("Атака",
             "Атака 15",
@@ -694,5 +694,15 @@ namespace Game.Logic
             FireTank, RepairBot, HomingChicken, Thunder, Fireball, FlameRitual, Permafrost, CurseOfFear, SpikeTrap, CircularSaw, Clone,
             Thunderstorm, Scout, Combo, FirstAid, CardsOfFate, TrappedCorridor
         });
+
+        public CardCollection()
+        {
+
+        }
+
+        public IEnumerable<CardType> GetCards()
+        {
+            return AllCards;
+        }
     }
 }
